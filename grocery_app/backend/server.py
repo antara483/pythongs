@@ -1,16 +1,31 @@
-from flask import Flask, request, jsonify, app
+# from flask import Flask, request, jsonify, app
+from flask import Flask, request, jsonify, session
+from flask_cors import CORS
+from auth import auth_bp
+from dotenv import load_dotenv
+import os
+
 import products_dao
 import uom_dao
 import json
-
 import order_dao
 from sql_connection import get_sql_connection
+
+# Flask App
 app = Flask(__name__)
-# CORS(app)
+
+# Load environment variables
+load_dotenv()
+app.secret_key = os.getenv('SECRET_KEY')
+
+
 
 
 connection = get_sql_connection()
 
+app.register_blueprint(auth_bp)
+# ✅ Correct CORS setup — ONLY THIS, no duplicate
+CORS(app, supports_credentials=True, origins=["http://localhost:63342"])
 
 @app.route('/getProducts', methods=['GET'])
 def get_products():
